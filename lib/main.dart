@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:cooking_app/screens/fade_animation.dart';
 import 'package:cooking_app/screens/login/login.dart';
 import 'package:cooking_app/screens/login/signup.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,6 +18,21 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: HomePage(),
+      localizationsDelegates: [
+        FormBuilderLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+       supportedLocales: [
+        Locale('en', ''),
+        Locale('es', ''),
+        Locale('fa', ''),
+        Locale('fr', ''),
+        Locale('ja', ''),
+        Locale('pt', ''),
+        Locale('sk', ''),
+        Locale('pl', ''),
+      ],
     );
   }
 }
@@ -106,7 +123,7 @@ class HomePage extends StatelessWidget {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => SignupPage()));
+                                    builder: (context) => SignupForm()));
                           },
                           color: Colors.yellow,
                           elevation: 0,

@@ -1,175 +1,165 @@
 import 'package:flutter/material.dart';
-import 'package:cooking_app/screens/fade_animation.dart';
-import 'package:cooking_app/screens/login/login.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:cooking_app/utils/auth_provider.dart';
+class SignupForm extends StatefulWidget {
+  const SignupForm({Key? key}) : super(key: key);
 
-class SignupPage extends StatelessWidget {
+  @override
+  _SignupFormState createState() => _SignupFormState();
+}
+
+class _SignupFormState extends State<SignupForm> {
   final _formKey = GlobalKey<FormBuilderState>();
+  final _emailFieldKey = GlobalKey<FormBuilderFieldState>();
 
   @override
   Widget build(BuildContext context) {
-    void showAlert(message) {
-      showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: message,
-            );
-          });
-    }
-
     return Scaffold(
-      resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            size: 20,
-            color: Colors.black,
-          ),
-        ),
-      ),
       body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
-          height: MediaQuery.of(context).size.height - 50,
-          width: double.infinity,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Column(
-                children: <Widget>[
-                  FadeAnimation(
-                    1,
-                    InkWell(
-                        onTap: () {},
-                        child: const Text(
-                          "Sign up",
-                          style: TextStyle(
-                              fontSize: 30, fontWeight: FontWeight.bold),
-                        )),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  FadeAnimation(
-                      1.2,
-                      Text(
-                        "Create an account, It's free",
-                        style: TextStyle(fontSize: 15, color: Colors.grey[700]),
-                      )),
-                ],
-              ),
-              FormBuilder(
-                      key: _formKey,
-                      autoFocusOnValidationFailure: true,
-                      child: Column(
-                        FormBuilderTextField(
-                          name: 'email',
-                          decoration: InputDecoration(
-                            labelText:
-                                'This value is passed along to the [Text.maxLines] attribute of the [Text] widget used to display the hint text.',
-                          ),
-                        )
-                      )
-                  ),
-              Column(
-                children: <Widget>[
-                  FadeAnimation(1.2, makeInput(label: "Email")),
-                  FadeAnimation(
-                      1.3, makeInput(label: "Password", obscureText: true)),
-                  FadeAnimation(1.4,
-                      makeInput(label: "Confirm Password", obscureText: true)),
-                ],
-              ),
-              FadeAnimation(
-                  1.5,
-                  Container(
-                    padding: const EdgeInsets.only(top: 3, left: 3),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        border: const Border(
-                          bottom: BorderSide(color: Colors.black),
-                          top: BorderSide(color: Colors.black),
-                          left: BorderSide(color: Colors.black),
-                          right: BorderSide(color: Colors.black),
-                        )),
-                    child: MaterialButton(
-                      minWidth: double.infinity,
-                      height: 60,
-                      onPressed: () {},
-                      color: Colors.greenAccent,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50)),
-                      child: const Text(
-                        "Sign up",
+        child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                height: MediaQuery.of(context).size.height - 50,
+                width: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    const Text("Sign up",
                         style: TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 18),
-                      ),
-                    ),
-                  )),
-              FadeAnimation(
-                  1.6,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      const Text("Already have an account?"),
-                      InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const LoginPage()));
-                          },
-                          child: const Text(
-                            "Login",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600, fontSize: 18),
-                          )),
-                    ],
-                  )),
-            ],
-          ),
-        ),
+                            fontSize: 30, fontWeight: FontWeight.bold)),
+                    FormBuilder(
+                        key: _formKey,
+                        // autovalidateMode: AutovalidateMode.onUserInteraction,
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 10),
+                            FormBuilderTextField(
+                              key: _emailFieldKey,
+                              name: 'email',
+                              decoration:
+                                  const InputDecoration(labelText: 'Email'),
+                              validator: FormBuilderValidators.compose([
+                                FormBuilderValidators.required(context),
+                                FormBuilderValidators.email(context),
+                              ]),
+                            ),
+                            const SizedBox(height: 10),
+                            FormBuilderTextField(
+                              name: 'password',
+                              decoration:
+                                  const InputDecoration(labelText: 'Password'),
+                              obscureText: true,
+                              validator: FormBuilderValidators.compose([
+                                FormBuilderValidators.required(context),
+                                FormBuilderValidators.minLength(context, 6),
+                              ]),
+                            ),
+                            const SizedBox(height: 10),
+                            FormBuilderTextField(
+                              name: 'confirm_password',
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              decoration: InputDecoration(
+                                labelText: 'Confirm Password',
+                                suffixIcon: ((_formKey
+                                            .currentState
+                                            ?.fields['confirm_password']
+                                            ?.hasError ??
+                                        false))
+                                    ? const Icon(Icons.error, color: Colors.red)
+                                    : const Icon(Icons.check,
+                                        color: Colors.green),
+                              ),
+                              obscureText: true,
+                              validator: FormBuilderValidators.compose([
+                                /*FormBuilderValidators.equal(
+                          context,
+                          _formKey.currentState != null
+                              ? _formKey.currentState.fields['password'].value
+                              : null),*/
+                                /*(val) {
+                        if (val !=
+                            _formKey.currentState?.fields['password']?.value) {
+                          return 'Passwords do not match';
+                        }
+                        return null;
+                      }*/
+                              ]),
+                            ),
+                            const SizedBox(height: 10),
+                            FormBuilderField<bool>(
+                              name: 'test',
+                              validator: FormBuilderValidators.compose([
+                                FormBuilderValidators.required(context),
+                                FormBuilderValidators.equal(context, true),
+                              ]),
+                              // initialValue: true,
+                              decoration: const InputDecoration(
+                                  labelText: 'Accept Terms?'),
+                              builder: (FormFieldState<bool?> field) {
+                                return InputDecorator(
+                                  decoration: InputDecoration(
+                                    errorText: field.errorText,
+                                  ),
+                                  child: SwitchListTile(
+                                    title: const Text(
+                                        'I have read and accept the terms of service.'),
+                                    onChanged: (bool value) {
+                                      field.didChange(value);
+                                    },
+                                    value: field.value ?? false,
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            MaterialButton(
+                              color: Theme.of(context).colorScheme.secondary,
+                              onPressed: () async {
+                                if (_formKey.currentState?.saveAndValidate() ??
+                                    false) {
+                                  if (true) {
+                                    // Either invalidate using Form Key
+                                    // _formKey.currentState?.invalidateField(
+                                    //     name: 'email',
+                                    //     errorText: 'Email already taken.');
+                                    // OR invalidate using Field Key
+                                    // _emailFieldKey.currentState?.invalidate('Email already taken.');
+                                  }
+                                  if (_formKey.currentState?.value["password"] ==
+                                        _formKey.currentState
+                                            ?.value["confirm_password"]) {
+                                      debugPrint("Passwords Match");
+                                    } else {
+                                      debugPrint("Passwords do not match");
+                                        _formKey.currentState?.invalidateField(
+                                          name: 'confirm_password',
+                                          errorText: 'Password does not match.'
+                                        );
+                                      return;
+                                    }
+                                  debugPrint('Valid');
+                                  var provider = AuthProvider();
+                                  var email = _formKey.currentState?.value["email"];
+                                  var password = _formKey.currentState?.value["password"];
+                                  var result = provider.signUp(email, password);
+                                  print(result);
+                                } else {
+                                  debugPrint('Invalid');
+                                }
+                                debugPrint(
+                                    _formKey.currentState?.value.toString());
+                              },
+                              child: const Text('Signup',
+                                  style: TextStyle(color: Colors.white)),
+                            )
+                          ],
+                        )),
+                  ],
+                ))),
       ),
-    );
-  }
-
-  Widget makeInput({label, obscureText = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          label,
-          style: const TextStyle(
-              fontSize: 15, fontWeight: FontWeight.w400, color: Colors.black87),
-        ),
-        const SizedBox(
-          height: 5,
-        ),
-        TextField(
-          obscureText: obscureText,
-          decoration: InputDecoration(
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-            enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: (Colors.grey[400])!)),
-            border: OutlineInputBorder(
-                borderSide: BorderSide(color: (Colors.grey[400])!)),
-          ),
-        ),
-        const SizedBox(
-          height: 30,
-        ),
-      ],
     );
   }
 }
