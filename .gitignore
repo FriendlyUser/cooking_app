@@ -23,3 +23,5 @@ doc/api/
 idea
 flutter
 .iml
+
+.env

@@ -1,7 +1,9 @@
+import 'package:cooking_app/screens/recipes/recipe_list.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:cooking_app/utils/auth_provider.dart';
+import 'package:cooking_app/utils/supabase.dart';
 class SignupForm extends StatefulWidget {
   const SignupForm({Key? key}) : super(key: key);
 
@@ -12,7 +14,17 @@ class SignupForm extends StatefulWidget {
 class _SignupFormState extends State<SignupForm> {
   final _formKey = GlobalKey<FormBuilderState>();
   final _emailFieldKey = GlobalKey<FormBuilderFieldState>();
+  final provider = AuthProvider();
 
+  // Future<void> _checkForRedirect(BuildContext context) async {
+  //   var session = await provider.getUserSession();
+  //   if (session != null) {
+  //     Navigator.push(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => const LoginPage()),
+  //     );
+  //   }
+  // }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -144,8 +156,26 @@ class _SignupFormState extends State<SignupForm> {
                                   var provider = AuthProvider();
                                   var email = _formKey.currentState?.value["email"];
                                   var password = _formKey.currentState?.value["password"];
-                                  var result = provider.signUp(email, password);
-                                  print(result);
+                                  try {
+                                    var result = await provider.signUp(email, password);
+                                    if (kDebugMode) {
+                                      print("What is going on here");
+                                      print(result);
+                                    }
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const RecipeListPage()),
+                                    );
+                                  } catch (e) {
+                                    debugPrint(e.toString());
+                                    _formKey.currentState?.invalidateField(
+                                      name: 'confirm_password',
+                                      errorText: e.toString(),
+                                    );
+                                  }
+
                                 } else {
                                   debugPrint('Invalid');
                                 }
