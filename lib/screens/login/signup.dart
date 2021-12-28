@@ -16,15 +16,6 @@ class _SignupFormState extends State<SignupForm> {
   final _emailFieldKey = GlobalKey<FormBuilderFieldState>();
   final provider = AuthProvider();
 
-  // Future<void> _checkForRedirect(BuildContext context) async {
-  //   var session = await provider.getUserSession();
-  //   if (session != null) {
-  //     Navigator.push(
-  //       context,
-  //       MaterialPageRoute(builder: (context) => const LoginPage()),
-  //     );
-  //   }
-  // }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,9 +1,23 @@
+import 'package:cooking_app/screens/recipes/recipe_list.dart';
+import 'package:cooking_app/utils/supabase.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cooking_app/screens/fade_animation.dart';
 import 'package:cooking_app/screens/login/signup.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormBuilderState>();
+  final _emailFieldKey = GlobalKey<FormBuilderFieldState>();
+  final provider = AuthProvider();
 
   @override
   Widget build(BuildContext context) {
@@ -53,17 +67,41 @@ class LoginPage extends StatelessWidget {
                             style: TextStyle(
                                 fontSize: 15, color: Colors.grey[700]),
                           )),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
+                        child: FormBuilder(
+                          key: _formKey,
+                          // autovalidateMode: AutovalidateMode.onUserInteraction,
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 10),
+                              FormBuilderTextField(
+                                key: _emailFieldKey,
+                                name: 'email',
+                                decoration:
+                                    const InputDecoration(labelText: 'Email'),
+                                validator: FormBuilderValidators.compose([
+                                  FormBuilderValidators.required(context),
+                                  FormBuilderValidators.email(context),
+                                ]),
+                              ),
+                              const SizedBox(height: 10),
+                              FormBuilderTextField(
+                                name: 'password',
+                                decoration: const InputDecoration(
+                                    labelText: 'Password'),
+                                obscureText: true,
+                                validator: FormBuilderValidators.compose([
+                                  FormBuilderValidators.required(context),
+                                  FormBuilderValidators.minLength(context, 6),
+                                ]),
+                              ),
+                              const SizedBox(height: 10)
+                            ],
+                          ),
+                        ),
+                      )
                     ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: Column(
-                      children: <Widget>[
-                        FadeAnimation(1.2, makeInput(label: "Email")),
-                        FadeAnimation(1.3,
-                            makeInput(label: "Password", obscureText: true)),
-                      ],
-                    ),
                   ),
                   FadeAnimation(
                       1.4,
@@ -82,7 +120,49 @@ class LoginPage extends StatelessWidget {
                           child: MaterialButton(
                             minWidth: double.infinity,
                             height: 60,
-                            onPressed: () {},
+                            onPressed: () async {
+                              if (_formKey.currentState?.saveAndValidate() ??
+                                  false) {
+                                if (true) {
+                                  // Either invalidate using Form Key
+                                  // _formKey.currentState?.invalidateField(
+                                  //     name: 'email',
+                                  //     errorText: 'Email already taken.');
+                                  // OR invalidate using Field Key
+                                  // _emailFieldKey.currentState?.invalidate('Email already taken.');
+                                }
+                                debugPrint('Valid');
+                                var provider = AuthProvider();
+                                var email =
+                                    _formKey.currentState?.value["email"];
+                                var password =
+                                    _formKey.currentState?.value["password"];
+                                try {
+                                  var result =
+                                      await provider.signIn(email, password);
+                                  if (kDebugMode) {
+                                    print("What is going on here");
+                                    print(result);
+                                  }
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const RecipeListPage()),
+                                  );
+                                } catch (e) {
+                                  debugPrint(e.toString());
+                                    _formKey.currentState?.invalidateField(
+                                      name: 'password',
+                                      errorText: e.toString(),
+                                    );
+                                }
+                              } else {
+                                debugPrint('Invalid');
+                              }
+                              debugPrint(
+                                  _formKey.currentState?.value.toString());
+                            },
                             color: Colors.greenAccent,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
@@ -102,11 +182,12 @@ class LoginPage extends StatelessWidget {
                         children: <Widget>[
                           const Text("Don't have an account?"),
                           InkWell(
-                            onTap: () {
+                            onTap: () async {
                               Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => SignupForm()));
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const SignupForm()));
                             },
                             child: const Text(
                               "Sign up",
@@ -122,36 +203,6 @@ class LoginPage extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Widget makeInput({label, obscureText = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          label,
-          style: const TextStyle(
-              fontSize: 15, fontWeight: FontWeight.w400, color: Colors.black87),
-        ),
-        const SizedBox(
-          height: 5,
-        ),
-        TextField(
-          obscureText: obscureText,
-          decoration: InputDecoration(
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-            enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: (Colors.grey[400])!)),
-            border: OutlineInputBorder(
-                borderSide: BorderSide(color: (Colors.grey[400])!)),
-          ),
-        ),
-        const SizedBox(
-          height: 30,
-        ),
-      ],
     );
   }
 }

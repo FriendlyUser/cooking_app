@@ -10,7 +10,7 @@ class AuthProvider {
 
   Session? userSession;
 
-  Future<Session?> getUserSession() async {
+  Session? getUserSession() {
     if (userSession != null) {
       return userSession;
     }
@@ -32,6 +32,23 @@ class AuthProvider {
     final response = await client.auth.signUp(
         email,
         password);
+    if (response.error != null) {
+      // Error
+      debugPrint('Error: ${response.error?.message}');
+      throw response.error!.message;
+    } else {
+      // Success
+      final session = response.data;
+      userSession = response.data;
+      return session;
+    }
+  }
+
+  Future<Session?> signIn(String email, String password) async {
+    final response = await client.auth.signIn(
+        email: email,
+        password: password,
+      );
     if (response.error != null) {
       // Error
       debugPrint('Error: ${response.error?.message}');

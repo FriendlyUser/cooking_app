@@ -1,4 +1,6 @@
 
+import 'package:cooking_app/screens/recipes/recipe_list.dart';
+import 'package:cooking_app/utils/supabase.dart';
 import 'package:flutter/material.dart';
 import 'package:cooking_app/screens/fade_animation.dart';
 import 'package:cooking_app/screens/login/login.dart';
