@@ -16,7 +16,7 @@ jobs:
           channel: 'stable'
       - run: flutter config --enable-web
       - run: flutter pub get
-      - run: flutter build web --release --base-href /cooking_app/
+      - run: flutter build web --release --base-href /cooking_app/ --dart-define=supabaseUrl=${{ secrets.SUPABASEURL }} --dart-define=supabaseKey=${{ secrets.SUPABASEKEY }}
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.0
         with:
