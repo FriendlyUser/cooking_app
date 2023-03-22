@@ -29,7 +29,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  dio: ^4.0.4
+  dio: ^5.0.3
   supabase: ^0.2.10
   simple_animations:
   flutter_form_builder:
